@@ -1,0 +1,9 @@
+{
+	"id": "guid-note",
+	"name": "GUID Note",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Create new notes named by a GUID, or by an external name-generator program that can read the note.",
+	"author": "rgraf",
+	"isDesktopOnly": true
+}
