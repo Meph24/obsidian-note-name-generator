@@ -1,3 +1,16 @@
+# dependencies
 node_modules/
+
+# build output (attached to releases, not committed)
 main.js
 *.js.map
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# local vault install config
+.env
+.env.local

@@ -1,8 +1,8 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
-import type GuidNotePlugin from './main';
+import type NoteNameGeneratorPlugin from './main';
 
-export class GuidNoteSettingTab extends PluginSettingTab {
-	constructor(app: App, private plugin: GuidNotePlugin) {
+export class NoteNameGeneratorSettingTab extends PluginSettingTab {
+	constructor(app: App, private plugin: NoteNameGeneratorPlugin) {
 		super(app, plugin);
 	}
 
@@ -13,7 +13,7 @@ export class GuidNoteSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Name generator command')
 			.setDesc('Shell command whose first stdout line becomes the note name. Leave empty for a random GUID. '
-				+ 'Placeholders: {{file}} (absolute path), {{vaultPath}}. Also exported as env GUIDNOTE_FILE / GUIDNOTE_VAULT_PATH.')
+				+ 'Placeholders: {{file}} (absolute path), {{vaultPath}}. Also exported as env NNG_FILE / NNG_VAULT_PATH.')
 			.addText(t => t
 				.setPlaceholder('e.g. python C:\\tools\\namer.py {{file}}')
 				.setValue(this.plugin.settings.generatorCommand)

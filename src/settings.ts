@@ -1,4 +1,4 @@
-export interface GuidNoteSettings {
+export interface NoteNameGeneratorSettings {
 	/** Shell command producing the new name on stdout. Empty = built-in random GUID. */
 	generatorCommand: string;
 	/** Pass the note content to the generator via stdin. */
@@ -13,7 +13,7 @@ export interface GuidNoteSettings {
 	timeoutMs: number;
 }
 
-export const DEFAULT_SETTINGS: GuidNoteSettings = {
+export const DEFAULT_SETTINGS: NoteNameGeneratorSettings = {
 	generatorCommand: '',
 	pipeContentToStdin: true,
 	randomWhenEmpty: true,

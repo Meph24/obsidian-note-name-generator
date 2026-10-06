@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { execFile } from 'child_process';
-import { GuidNoteSettings } from './settings';
+import { NoteNameGeneratorSettings } from './settings';
 
 export interface GeneratorInput {
 	/** Absolute path of the note on disk, if it exists yet. */
@@ -14,7 +14,7 @@ export interface GeneratorInput {
 /** Characters not allowed in Obsidian file names. */
 const ILLEGAL = /[\\/:*?"<>|#^[\]]/g;
 
-export function randomGuid(settings: GuidNoteSettings): string {
+export function randomGuid(settings: NoteNameGeneratorSettings): string {
 	let id: string = randomUUID();
 	if (settings.noHyphens) id = id.replace(/-/g, '');
 	if (settings.upperCase) id = id.toUpperCase();
@@ -25,7 +25,7 @@ export function randomGuid(settings: GuidNoteSettings): string {
  * Produce a new base name (without extension). Uses the external generator
  * when configured and applicable, otherwise a random GUID.
  */
-export async function generateName(settings: GuidNoteSettings, input: GeneratorInput): Promise<string> {
+export async function generateName(settings: NoteNameGeneratorSettings, input: GeneratorInput): Promise<string> {
 	const empty = input.content.trim().length === 0;
 	const cmd = settings.generatorCommand.trim();
 
@@ -49,7 +49,7 @@ function sanitize(raw: string): string {
  * Placeholders: {{file}} absolute path, {{vaultPath}} vault-relative path.
  * Unresolved placeholders (new note) become empty strings.
  */
-function runGenerator(cmd: string, settings: GuidNoteSettings, input: GeneratorInput): Promise<string> {
+function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: GeneratorInput): Promise<string> {
 	const resolved = cmd
 		.replace(/\{\{file\}\}/g, quote(input.absolutePath ?? ''))
 		.replace(/\{\{vaultPath\}\}/g, quote(input.vaultPath ?? ''));
@@ -66,8 +66,8 @@ function runGenerator(cmd: string, settings: GuidNoteSettings, input: GeneratorI
 			maxBuffer: 1024 * 1024,
 			env: {
 				...process.env,
-				GUIDNOTE_FILE: input.absolutePath ?? '',
-				GUIDNOTE_VAULT_PATH: input.vaultPath ?? '',
+				NNG_FILE: input.absolutePath ?? '',
+				NNG_VAULT_PATH: input.vaultPath ?? '',
 			},
 		}, (err, stdout, stderr) => {
 			if (err) {

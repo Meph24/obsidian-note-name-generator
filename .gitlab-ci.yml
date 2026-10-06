@@ -1,0 +1,47 @@
+image: node:20
+
+stages:
+  - build
+  - release
+
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - node_modules/
+
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - main.js
+      - manifest.json
+    expire_in: 1 week
+
+# Tag a commit (e.g. `npm version 0.2.0 && git push --follow-tags`) to publish a release
+# whose assets are main.js and manifest.json - the files Obsidian's community plugin
+# installer (and BRAT) download.
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: build
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "Releasing $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: "Note Name Generator $CI_COMMIT_TAG"
+    description: "See CHANGELOG.md"
+    assets:
+      links:
+        - name: main.js
+          url: "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID/artifacts/raw/main.js"
+        - name: manifest.json
+          url: "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID/artifacts/raw/manifest.json"

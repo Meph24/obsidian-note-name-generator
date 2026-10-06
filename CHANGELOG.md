@@ -1,0 +1,16 @@
+# Changelog
+
+All notable changes to this project are documented here.
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/).
+
+## [Unreleased]
+
+## [0.1.0] - 2026-10-06
+
+### Added
+- Command *Create new note with generated name*
+- Command *Rename current note with generated name*
+- Built-in random GUID generator (UUID v4) with upper-case and no-hyphen options
+- Pluggable external generator: any shell command, fed the note path via placeholders
+  and environment variables and the note content via stdin
+- Option to fall back to a random GUID when the note is empty

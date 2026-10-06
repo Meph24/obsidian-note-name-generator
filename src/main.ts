@@ -1,14 +1,14 @@
 import { Plugin } from 'obsidian';
-import { DEFAULT_SETTINGS, GuidNoteSettings } from './settings';
-import { GuidNoteSettingTab } from './settingsTab';
+import { DEFAULT_SETTINGS, NoteNameGeneratorSettings } from './settings';
+import { NoteNameGeneratorSettingTab } from './settingsTab';
 import { createNamedNote, renameActiveNote } from './commands';
 
-export default class GuidNotePlugin extends Plugin {
-	settings: GuidNoteSettings = DEFAULT_SETTINGS;
+export default class NoteNameGeneratorPlugin extends Plugin {
+	settings: NoteNameGeneratorSettings = DEFAULT_SETTINGS;
 
 	async onload() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		this.addSettingTab(new GuidNoteSettingTab(this.app, this));
+		this.addSettingTab(new NoteNameGeneratorSettingTab(this.app, this));
 
 		this.addCommand({
 			id: 'create-note',
