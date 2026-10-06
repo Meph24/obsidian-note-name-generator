@@ -23,6 +23,8 @@ export interface NoteNameGeneratorSettings {
 	takeover: TakeoverMode;
 	/** Regex for names that count as "untitled" (Obsidian's default, localized variants). */
 	untitledPattern: string;
+	/** Never rename notes created by the core Daily Notes plugin. */
+	protectDailyNotes: boolean;
 	/** Show a ribbon (left sidebar) icon for creating a note. */
 	ribbonIcon: boolean;
 }
@@ -36,5 +38,6 @@ export const DEFAULT_SETTINGS: NoteNameGeneratorSettings = {
 	timeoutMs: 10000,
 	takeover: 'off',
 	untitledPattern: '^(Untitled|Unbenannt|Sans titre|Sin título)( \\d+)?$',
+	protectDailyNotes: true,
 	ribbonIcon: true,
 };

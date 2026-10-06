@@ -1,6 +1,7 @@
 import { TFolder, TFile, FileManager } from 'obsidian';
 import type NoteNameGeneratorPlugin from './main';
 import { generateName } from './generator';
+import { isDailyNote } from './dailyNotes';
 
 /**
  * Obsidian's internal method behind "New note", Ctrl+N and plugins such as Tray.
@@ -36,7 +37,7 @@ export class Takeover {
 		const plugin = this.plugin;
 
 		fm.createNewMarkdownFile = async function (this: FileManager, folder, filename, contents) {
-			const name = await plugin.takeover.replaceName(filename, contents ?? '');
+			const name = await plugin.takeover.replaceName(folder, filename, contents ?? '');
 			return original.call(this, folder, name, contents);
 		};
 	}
@@ -52,8 +53,9 @@ export class Takeover {
 	 * Returns the filename to use. Keeps any folder segment of the requested
 	 * name (Tray passes "<folder>/<date>") and replaces only the base name.
 	 */
-	async replaceName(requested: string | undefined, contents: string): Promise<string | undefined> {
+	async replaceName(folder: TFolder, requested: string | undefined, contents: string): Promise<string | undefined> {
 		if (!this.shouldReplace(requested)) return requested;
+		if (this.plugin.settings.protectDailyNotes && isDailyNote(this.plugin.app, folder, requested)) return requested;
 
 		const req = requested ?? '';
 		const slash = req.lastIndexOf('/');

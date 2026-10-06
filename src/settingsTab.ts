@@ -103,6 +103,18 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 					this.display();
 				}));
 
+		if (settings.takeover !== 'off') {
+			new Setting(containerEl)
+				.setName('Leave daily notes alone')
+				.setDesc('Never rename notes created by the core Daily Notes plugin (detected via its folder and date format).')
+				.addToggle(t => t
+					.setValue(settings.protectDailyNotes)
+					.onChange(async v => {
+						settings.protectDailyNotes = v;
+						await this.plugin.saveSettings();
+					}));
+		}
+
 		if (settings.takeover === 'untitled') {
 			new Setting(containerEl)
 				.setName('Untitled pattern')

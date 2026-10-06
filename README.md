@@ -75,6 +75,11 @@ gets a generated name, no matter where it was created from. The hook is removed 
 | **Untitled only** | Replaces the name when none was given or it matches the *Untitled pattern* (Obsidian's localized default, e.g. `Untitled 3`, `Unbenannt`). Names chosen by other plugins are kept. |
 | **All** | Always replaces the base name. Tray's quick note then gets a generated name instead of a date; its folder setting is still honoured. |
 
+**Daily notes are protected.** The core Daily Notes plugin creates its notes through the same method, but their
+names follow a fixed scheme, so by default the hook leaves any note alone that lands in the daily-notes folder and
+whose name parses with the daily-notes date format. Turn *Leave daily notes alone* off if you really want them renamed.
+Note that a Tray quick note can only be told apart from a daily note if folder or date format differ.
+
 If the generator fails, the originally requested name is used and the error is logged to the developer console.
 
 ## Settings
@@ -90,6 +95,7 @@ If the generator fails, the originally requested name is used and the error is l
 | Ribbon icon | on | Left-sidebar icon that creates a note with a generated name |
 | Take over new-note creation | Off | See above |
 | Untitled pattern | `^(Untitled\|Unbenannt\|…)( \d+)?$` | Regex for names treated as "untitled" |
+| Leave daily notes alone | on | Never rename core Daily Notes |
 
 ## Installation
 
