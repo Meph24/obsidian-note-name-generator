@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import type NoteNameGeneratorPlugin from './main';
+import { TakeoverMode } from './settings';
 
 export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 	constructor(app: App, private plugin: NoteNameGeneratorPlugin) {
@@ -8,7 +9,10 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 
 	display(): void {
 		const { containerEl } = this;
+		const { settings } = this.plugin;
 		containerEl.empty();
+
+		new Setting(containerEl).setName('Generator').setHeading();
 
 		new Setting(containerEl)
 			.setName('Name generator command')
@@ -16,9 +20,9 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 				+ 'Placeholders: {{file}} (absolute path), {{vaultPath}}. Also exported as env NNG_FILE / NNG_VAULT_PATH.')
 			.addText(t => t
 				.setPlaceholder('e.g. python C:\\tools\\namer.py {{file}}')
-				.setValue(this.plugin.settings.generatorCommand)
+				.setValue(settings.generatorCommand)
 				.onChange(async v => {
-					this.plugin.settings.generatorCommand = v;
+					settings.generatorCommand = v;
 					await this.plugin.saveSettings();
 				}));
 
@@ -26,9 +30,9 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 			.setName('Pipe note content to stdin')
 			.setDesc('Send the current note text to the generator on stdin.')
 			.addToggle(t => t
-				.setValue(this.plugin.settings.pipeContentToStdin)
+				.setValue(settings.pipeContentToStdin)
 				.onChange(async v => {
-					this.plugin.settings.pipeContentToStdin = v;
+					settings.pipeContentToStdin = v;
 					await this.plugin.saveSettings();
 				}));
 
@@ -36,20 +40,20 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 			.setName('Random GUID when note is empty')
 			.setDesc('Skip the generator for empty notes. New notes are always empty, so they always get a GUID when this is on.')
 			.addToggle(t => t
-				.setValue(this.plugin.settings.randomWhenEmpty)
+				.setValue(settings.randomWhenEmpty)
 				.onChange(async v => {
-					this.plugin.settings.randomWhenEmpty = v;
+					settings.randomWhenEmpty = v;
 					await this.plugin.saveSettings();
 				}));
 
 		new Setting(containerEl)
 			.setName('Generator timeout (ms)')
 			.addText(t => t
-				.setValue(String(this.plugin.settings.timeoutMs))
+				.setValue(String(settings.timeoutMs))
 				.onChange(async v => {
 					const n = parseInt(v, 10);
 					if (!isNaN(n) && n > 0) {
-						this.plugin.settings.timeoutMs = n;
+						settings.timeoutMs = n;
 						await this.plugin.saveSettings();
 					}
 				}));
@@ -59,19 +63,56 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Upper case')
 			.addToggle(t => t
-				.setValue(this.plugin.settings.upperCase)
+				.setValue(settings.upperCase)
 				.onChange(async v => {
-					this.plugin.settings.upperCase = v;
+					settings.upperCase = v;
 					await this.plugin.saveSettings();
 				}));
 
 		new Setting(containerEl)
 			.setName('No hyphens')
 			.addToggle(t => t
-				.setValue(this.plugin.settings.noHyphens)
+				.setValue(settings.noHyphens)
 				.onChange(async v => {
-					this.plugin.settings.noHyphens = v;
+					settings.noHyphens = v;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl).setName('Integration').setHeading();
+
+		new Setting(containerEl)
+			.setName('Ribbon icon')
+			.setDesc('Show a "new note" icon in the left sidebar that uses the generator.')
+			.addToggle(t => t
+				.setValue(settings.ribbonIcon)
+				.onChange(async v => {
+					settings.ribbonIcon = v;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Take over new-note creation')
+			.setDesc('Hook Obsidian\'s own "New note" (file explorer button, Ctrl+N) and plugins that use it, such as Tray\'s quick note. '
+				+ '"Untitled only" replaces default names; "All" also replaces names other plugins chose (e.g. Tray\'s date).')
+			.addDropdown(d => d
+				.addOptions({ off: 'Off', untitled: 'Untitled only', all: 'All' })
+				.setValue(settings.takeover)
+				.onChange(async v => {
+					settings.takeover = v as TakeoverMode;
+					await this.plugin.saveSettings();
+					this.display();
+				}));
+
+		if (settings.takeover === 'untitled') {
+			new Setting(containerEl)
+				.setName('Untitled pattern')
+				.setDesc('Regular expression matching names that should be replaced (Obsidian\'s default name in your language).')
+				.addText(t => t
+					.setValue(settings.untitledPattern)
+					.onChange(async v => {
+						settings.untitledPattern = v;
+						await this.plugin.saveSettings();
+					}));
+		}
 	}
 }

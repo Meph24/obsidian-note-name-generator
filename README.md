@@ -63,6 +63,20 @@ Python script that gets the path as an argument and the content on stdin:
 python C:\tools\note_namer.py {{file}}
 ```
 
+## Taking over Obsidian's own "New note"
+
+Obsidian's file explorer button, `Ctrl+N`, and plugins such as [Tray](https://github.com/dragonwocky/obsidian-tray)'s
+global quick note all create notes through the same internal method. The plugin can hook it so every new note
+gets a generated name, no matter where it was created from. The hook is removed when the plugin unloads.
+
+| Mode | Behaviour |
+|------|-----------|
+| **Off** (default) | Only this plugin's own commands and ribbon icon generate names. |
+| **Untitled only** | Replaces the name when none was given or it matches the *Untitled pattern* (Obsidian's localized default, e.g. `Untitled 3`, `Unbenannt`). Names chosen by other plugins are kept. |
+| **All** | Always replaces the base name. Tray's quick note then gets a generated name instead of a date; its folder setting is still honoured. |
+
+If the generator fails, the originally requested name is used and the error is logged to the developer console.
+
 ## Settings
 
 | Setting | Default | Meaning |
@@ -73,6 +87,9 @@ python C:\tools\note_namer.py {{file}}
 | Generator timeout (ms) | 10000 | Kill the generator after this long |
 | Upper case | off | `3F1C9E2A-…` instead of `3f1c9e2a-…` |
 | No hyphens | off | `3f1c9e2a7b4d…` |
+| Ribbon icon | on | Left-sidebar icon that creates a note with a generated name |
+| Take over new-note creation | Off | See above |
+| Untitled pattern | `^(Untitled\|Unbenannt\|…)( \d+)?$` | Regex for names treated as "untitled" |
 
 ## Installation
 

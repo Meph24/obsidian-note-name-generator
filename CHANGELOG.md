@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [S
 
 ## [Unreleased]
 
+### Added
+- Ribbon icon (left sidebar) that creates a note with a generated name; can be turned off
+- Optional takeover of Obsidian's own new-note creation (file explorer, `Ctrl+N`, Tray quick note)
+  with modes *Off*, *Untitled only* (configurable pattern) and *All*
+
 ## [0.1.0] - 2026-10-06
 
 ### Added
