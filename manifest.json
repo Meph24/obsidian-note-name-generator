@@ -1,10 +1,10 @@
 {
 	"id": "note-name-generator",
 	"name": "Note Name Generator",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.5.0",
 	"description": "Create or rename notes with a generated name: a random GUID, or the output of any external program that can read the note.",
 	"author": "Robert Graf",
-	"authorUrl": "https://gitlab.com/Meph24",
+	"authorUrl": "https://github.com/Meph24",
 	"isDesktopOnly": false
 }
