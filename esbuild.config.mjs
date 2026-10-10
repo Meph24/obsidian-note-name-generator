@@ -30,6 +30,9 @@ const context = await esbuild.context({
 	],
 	format: "cjs",
 	target: "es2018",
+	// Obsidian's renderer cannot resolve Node built-ins through a native import(),
+	// so lower dynamic imports to require().
+	supported: { "dynamic-import": false },
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,

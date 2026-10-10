@@ -10,7 +10,7 @@ export default class NoteNameGeneratorPlugin extends Plugin {
 	private ribbonEl: HTMLElement | null = null;
 
 	async onload() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<NoteNameGeneratorSettings>);
 		this.addSettingTab(new NoteNameGeneratorSettingTab(this.app, this));
 
 		this.addCommand({

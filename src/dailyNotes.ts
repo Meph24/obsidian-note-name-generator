@@ -12,6 +12,12 @@ interface InternalPlugins {
 
 const DEFAULT_FORMAT = 'YYYY-MM-DD';
 
+/**
+ * Strict date parsing of the bundled Moment.js. Declared locally so the call
+ * is typed even where the `moment` package's typings are not installed.
+ */
+const parseDate = moment as unknown as (input: string, format: string, strict: boolean) => { isValid(): boolean };
+
 /** Returns the core Daily Notes config if the plugin is enabled, else null. */
 export function dailyNotesOptions(app: App): Required<DailyNotesOptions> | null {
 	const internal = (app as App & { internalPlugins?: InternalPlugins }).internalPlugins;
@@ -39,5 +45,5 @@ export function isDailyNote(app: App, folder: TFolder, requested: string | undef
 	const target = normalizePath(subdir ? `${folder.path}/${subdir}` : folder.path);
 
 	if (target !== opts.folder) return false;
-	return moment(base, opts.format, true).isValid();
+	return parseDate(base, opts.format, true).isValid();
 }

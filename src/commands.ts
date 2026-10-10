@@ -23,7 +23,7 @@ export async function renameActiveNote(plugin: NoteNameGeneratorPlugin): Promise
 	const { app, settings } = plugin;
 	const file = app.workspace.getActiveFile();
 	if (!(file instanceof TFile)) {
-		new Notice('Note Name Generator: no active file');
+		new Notice('No active file');
 		return;
 	}
 

@@ -99,6 +99,8 @@ If the generator fails, the originally requested name is used and the error is l
 
 ## Installation
 
+Requires Obsidian 1.13.0 or later.
+
 ### From a release
 
 Download `main.js` and `manifest.json` from the latest release and put them in
@@ -130,8 +132,10 @@ on mobile a configured generator command is ignored and a random GUID is used in
 
 ```sh
 npm version 0.2.0        # bumps package.json, manifest.json, versions.json
-git push --follow-tags   # CI builds and attaches main.js + manifest.json to the release
+git push --follow-tags   # CI lints, builds and attaches main.js + manifest.json to the release
 ```
+
+Run `npm run lint` first; it applies the same rules as the automated review of Obsidian's community directory.
 
 ## License
 

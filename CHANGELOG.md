@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [S
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-10
+
+### Changed
+- Requires Obsidian 1.13.0 or later: the settings use the declarative settings API, so they show up
+  in Obsidian's settings search
+- *Untitled pattern* reports an invalid regular expression directly below the setting
+- Release assets carry GitHub build provenance attestations
+
+### Fixed
+- Findings of the community directory's automated review: Node's `child_process` is loaded through a
+  guarded dynamic import, and the code lints cleanly with `eslint-plugin-obsidianmd` (`npm run lint`)
+
 ## [0.2.0] - 2026-10-10
 
 ### Added

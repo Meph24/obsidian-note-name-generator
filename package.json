@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-note-name-generator",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Obsidian plugin: create or rename notes with a generated name - a random GUID or the output of any external program.",
 	"main": "main.js",
 	"type": "module",
@@ -22,15 +22,22 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"install:vault": "node install.mjs",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint ."
 	},
 	"devDependencies": {
 		"@types/node": "^16.11.6",
 		"esbuild": "0.25.5",
+		"eslint": "^9.39.5",
+		"eslint-plugin-obsidianmd": "^0.4.2",
 		"tslib": "2.4.0",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.71.1"
 	},
 	"dependencies": {
 		"obsidian": "latest"
+	},
+	"overrides": {
+		"moment": "^2.31.0"
 	}
 }

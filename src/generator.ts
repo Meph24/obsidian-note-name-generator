@@ -10,6 +10,38 @@ export interface GeneratorInput {
 	content: string;
 }
 
+type NodeEnv = Record<string, string | undefined>;
+
+/**
+ * The part of Node's `child_process` module used here. Declared locally so the
+ * desktop-only code is fully typed even where Node's typings are not installed.
+ */
+interface ChildProcessModule {
+	execFile: (
+		file: string,
+		args: string[],
+		options: {
+			timeout: number;
+			windowsHide: boolean;
+			windowsVerbatimArguments: boolean;
+			maxBuffer: number;
+			env: NodeEnv;
+		},
+		callback: (err: Error | null, stdout: string, stderr: string) => void,
+	) => {
+		stdin: {
+			on(event: 'error', listener: () => void): unknown;
+			write(data: string): unknown;
+			end(): unknown;
+		} | null;
+	};
+}
+
+/** Environment of the desktop app's Node process, inherited by the generator. */
+function nodeEnv(): NodeEnv {
+	return (window as { process?: { env?: NodeEnv } }).process?.env ?? {};
+}
+
 /** Characters not allowed in Obsidian file names. */
 const ILLEGAL = /[\\/:*?"<>|#^[\]]/g;
 
@@ -37,7 +69,7 @@ function uuidV4(): string {
 
 /** External generators need a shell, which only the desktop app has. */
 export function canRunGenerator(): boolean {
-	return Platform.isDesktopApp;
+	return Platform.isDesktop;
 }
 
 /**
@@ -69,16 +101,17 @@ function sanitize(raw: string): string {
  * Placeholders: {{file}} absolute path, {{vaultPath}} vault-relative path.
  * Unresolved placeholders (new note) become empty strings.
  */
-function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: GeneratorInput): Promise<string> {
+async function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: GeneratorInput): Promise<string> {
+	if (!Platform.isDesktop) throw new Error('External generators only run in the desktop app');
+
 	const resolved = cmd
 		.replace(/\{\{file\}\}/g, quote(input.absolutePath ?? ''))
 		.replace(/\{\{vaultPath\}\}/g, quote(input.vaultPath ?? ''));
 
 	// Loaded lazily: a top-level import would make the plugin fail to load on mobile.
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const { execFile } = require('child_process') as typeof import('child_process');
+	const { execFile } = (await import('child_process')) as ChildProcessModule;
 
-	const isWin = process.platform === 'win32';
+	const isWin = Platform.isWin;
 	const shell = isWin ? 'cmd.exe' : '/bin/sh';
 	const args = isWin ? ['/d', '/s', '/c', `"${resolved}"`] : ['-c', resolved];
 
@@ -89,7 +122,7 @@ function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: G
 			windowsVerbatimArguments: isWin,
 			maxBuffer: 1024 * 1024,
 			env: {
-				...process.env,
+				...nodeEnv(),
 				NNG_FILE: input.absolutePath ?? '',
 				NNG_VAULT_PATH: input.vaultPath ?? '',
 			},
@@ -99,7 +132,7 @@ function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: G
 				reject(new Error(`Generator failed: ${err.message}${detail}`));
 				return;
 			}
-			resolve(String(stdout));
+			resolve(stdout);
 		});
 
 		if (child.stdin) {
