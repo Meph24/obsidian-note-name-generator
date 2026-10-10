@@ -6,5 +6,5 @@
 	"description": "Create or rename notes with a generated name: a random GUID, or the output of any external program that can read the note.",
 	"author": "Robert Graf",
 	"authorUrl": "https://gitlab.com/Meph24",
-	"isDesktopOnly": true
+	"isDesktopOnly": false
 }

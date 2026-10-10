@@ -11,6 +11,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [S
   with modes *Off*, *Untitled only* (configurable pattern) and *All*
 - *Leave daily notes alone* (default on): the takeover skips notes created by the core Daily Notes plugin
 
+### Fixed
+- The plugin can now be enabled in the mobile app: it is no longer marked desktop-only and no longer
+  loads Node modules at startup. External generator commands remain desktop-only; mobile uses random GUIDs
+
 ## [0.1.0] - 2026-10-06
 
 ### Added

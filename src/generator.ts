@@ -1,5 +1,4 @@
-import { randomUUID } from 'crypto';
-import { execFile } from 'child_process';
+import { Platform } from 'obsidian';
 import { NoteNameGeneratorSettings } from './settings';
 
 export interface GeneratorInput {
@@ -15,21 +14,42 @@ export interface GeneratorInput {
 const ILLEGAL = /[\\/:*?"<>|#^[\]]/g;
 
 export function randomGuid(settings: NoteNameGeneratorSettings): string {
-	let id: string = randomUUID();
+	let id: string = uuidV4();
 	if (settings.noHyphens) id = id.replace(/-/g, '');
 	if (settings.upperCase) id = id.toUpperCase();
 	return id;
 }
 
 /**
+ * Random v4 UUID from the Web Crypto API, which exists on desktop and mobile
+ * alike (Node's `crypto` module is not available in the mobile app).
+ */
+function uuidV4(): string {
+	if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+
+	// Older Android WebViews lack randomUUID but do have getRandomValues.
+	const b = crypto.getRandomValues(new Uint8Array(16));
+	b[6] = (b[6] & 0x0f) | 0x40;
+	b[8] = (b[8] & 0x3f) | 0x80;
+	const hex = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/** External generators need a shell, which only the desktop app has. */
+export function canRunGenerator(): boolean {
+	return Platform.isDesktopApp;
+}
+
+/**
  * Produce a new base name (without extension). Uses the external generator
- * when configured and applicable, otherwise a random GUID.
+ * when configured and applicable, otherwise a random GUID. On mobile the
+ * external generator is unavailable, so a random GUID is always used.
  */
 export async function generateName(settings: NoteNameGeneratorSettings, input: GeneratorInput): Promise<string> {
 	const empty = input.content.trim().length === 0;
 	const cmd = settings.generatorCommand.trim();
 
-	if (!cmd || (empty && settings.randomWhenEmpty)) {
+	if (!cmd || !canRunGenerator() || (empty && settings.randomWhenEmpty)) {
 		return randomGuid(settings);
 	}
 
@@ -53,6 +73,10 @@ function runGenerator(cmd: string, settings: NoteNameGeneratorSettings, input: G
 	const resolved = cmd
 		.replace(/\{\{file\}\}/g, quote(input.absolutePath ?? ''))
 		.replace(/\{\{vaultPath\}\}/g, quote(input.vaultPath ?? ''));
+
+	// Loaded lazily: a top-level import would make the plugin fail to load on mobile.
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const { execFile } = require('child_process') as typeof import('child_process');
 
 	const isWin = process.platform === 'win32';
 	const shell = isWin ? 'cmd.exe' : '/bin/sh';

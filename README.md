@@ -120,9 +120,11 @@ npm run install:vault -- <vault>    # copies main.js + manifest.json into the va
 For live development, set `OBSIDIAN_PLUGINS_DIR` to `<vault>/.obsidian/plugins` and run `npm run dev`;
 the bundle is then written straight into the vault on every change.
 
-## Desktop only
+## Mobile
 
-The external generator uses Node's `child_process`, which is only available in the desktop app.
+The plugin works in the mobile app (Android, iOS) with the built-in random GUID generator.
+The external generator uses Node's `child_process`, which is only available in the desktop app;
+on mobile a configured generator command is ignored and a random GUID is used instead.
 
 ## Releasing
 

@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import type NoteNameGeneratorPlugin from './main';
 import { TakeoverMode } from './settings';
+import { canRunGenerator } from './generator';
 
 export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 	constructor(app: App, private plugin: NoteNameGeneratorPlugin) {
@@ -14,49 +15,55 @@ export class NoteNameGeneratorSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName('Generator').setHeading();
 
-		new Setting(containerEl)
-			.setName('Name generator command')
-			.setDesc('Shell command whose first stdout line becomes the note name. Leave empty for a random GUID. '
-				+ 'Placeholders: {{file}} (absolute path), {{vaultPath}}. Also exported as env NNG_FILE / NNG_VAULT_PATH.')
-			.addText(t => t
-				.setPlaceholder('e.g. python C:\\tools\\namer.py {{file}}')
-				.setValue(settings.generatorCommand)
-				.onChange(async v => {
-					settings.generatorCommand = v;
-					await this.plugin.saveSettings();
-				}));
-
-		new Setting(containerEl)
-			.setName('Pipe note content to stdin')
-			.setDesc('Send the current note text to the generator on stdin.')
-			.addToggle(t => t
-				.setValue(settings.pipeContentToStdin)
-				.onChange(async v => {
-					settings.pipeContentToStdin = v;
-					await this.plugin.saveSettings();
-				}));
-
-		new Setting(containerEl)
-			.setName('Random GUID when note is empty')
-			.setDesc('Skip the generator for empty notes. New notes are always empty, so they always get a GUID when this is on.')
-			.addToggle(t => t
-				.setValue(settings.randomWhenEmpty)
-				.onChange(async v => {
-					settings.randomWhenEmpty = v;
-					await this.plugin.saveSettings();
-				}));
-
-		new Setting(containerEl)
-			.setName('Generator timeout (ms)')
-			.addText(t => t
-				.setValue(String(settings.timeoutMs))
-				.onChange(async v => {
-					const n = parseInt(v, 10);
-					if (!isNaN(n) && n > 0) {
-						settings.timeoutMs = n;
+		if (canRunGenerator()) {
+			new Setting(containerEl)
+				.setName('Name generator command')
+				.setDesc('Shell command whose first stdout line becomes the note name. Leave empty for a random GUID. '
+					+ 'Placeholders: {{file}} (absolute path), {{vaultPath}}. Also exported as env NNG_FILE / NNG_VAULT_PATH.')
+				.addText(t => t
+					.setPlaceholder('e.g. python C:\\tools\\namer.py {{file}}')
+					.setValue(settings.generatorCommand)
+					.onChange(async v => {
+						settings.generatorCommand = v;
 						await this.plugin.saveSettings();
-					}
-				}));
+					}));
+
+			new Setting(containerEl)
+				.setName('Pipe note content to stdin')
+				.setDesc('Send the current note text to the generator on stdin.')
+				.addToggle(t => t
+					.setValue(settings.pipeContentToStdin)
+					.onChange(async v => {
+						settings.pipeContentToStdin = v;
+						await this.plugin.saveSettings();
+					}));
+
+			new Setting(containerEl)
+				.setName('Random GUID when note is empty')
+				.setDesc('Skip the generator for empty notes. New notes are always empty, so they always get a GUID when this is on.')
+				.addToggle(t => t
+					.setValue(settings.randomWhenEmpty)
+					.onChange(async v => {
+						settings.randomWhenEmpty = v;
+						await this.plugin.saveSettings();
+					}));
+
+			new Setting(containerEl)
+				.setName('Generator timeout (ms)')
+				.addText(t => t
+					.setValue(String(settings.timeoutMs))
+					.onChange(async v => {
+						const n = parseInt(v, 10);
+						if (!isNaN(n) && n > 0) {
+							settings.timeoutMs = n;
+							await this.plugin.saveSettings();
+						}
+					}));
+		} else {
+			new Setting(containerEl)
+				.setName('External generator unavailable')
+				.setDesc('External name generator commands only run in the desktop app. On this device every generated name is a random GUID.');
+		}
 
 		new Setting(containerEl).setName('GUID format').setHeading();
 
