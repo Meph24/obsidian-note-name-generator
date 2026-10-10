@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-note-name-generator",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Obsidian plugin: create or rename notes with a generated name - a random GUID or the output of any external program.",
 	"main": "main.js",
 	"type": "module",
@@ -9,7 +9,7 @@
 	"author": "Robert Graf",
 	"repository": {
 		"type": "git",
-		"url": "https://gitlab.com/Meph24/obsidian-note-name-generator.git"
+		"url": "https://github.com/Meph24/obsidian-note-name-generator.git"
 	},
 	"keywords": [
 		"obsidian",
